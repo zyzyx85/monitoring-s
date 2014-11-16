@@ -1,13 +1,12 @@
 /**
  * Created by federico on 13/11/14.
  */
-"use strict"
+"use strict";
 var express = require('express');
-var cpu_os = require('./helpers/cpu_os');
+var cpuhealth = require('./helpers/cpuhealth');
 
 var app = express();
-var cpu = cpu_os.start_process();
-
+var cpuHealth = cpuhealth();
 
 
 app.get('/', function (req, res) {
@@ -15,12 +14,11 @@ app.get('/', function (req, res) {
 });
 
 app.get('/cpu', function (req, res) {
-  res.send(cpu.current_cpus())
+  res.send(cpuHealth.cpus())
 });
 
 app.get('/cpu/:id', function (req, res) {
-  var id = req.param('id')
-  res.send(cpu.current_cpu(id))
+  res.send(cpuHealth.cpu(req.param('id')))
 });
 
 var server = app.listen(3000, function () {
