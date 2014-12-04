@@ -8,8 +8,16 @@ var DELAY = 1000;
 
 
 function cpuHealth(){
+  var countConnection = 0;
+  var connections = {};
   var result = {};
   var lastcpus = null;
+
+  function send() {
+    Object.keys(connections).forEach(function (id) {
+      connections[id](result)
+    })
+  }
 
   var cpus = function () {
     var cpus = os.cpus();
@@ -35,6 +43,7 @@ function cpuHealth(){
 
       });
       result = obj;
+      send();
     }
 
   }.bind(this);
@@ -45,9 +54,17 @@ function cpuHealth(){
     return result;
   };
 
-  cpuHealth.cpu = function(id){
-    return result[id];
+  cpuHealth.addConnection = function(ws){
+    var id = countConnection++;
+    connections[id] = ws;
+    return id;
   };
+
+  cpuHealth.removeConnection = function(id){
+    delete connections[id];
+  };
+
+
 
   (function(){
     setInterval(cpus, DELAY);
